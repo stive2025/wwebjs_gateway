@@ -12,18 +12,17 @@ async function ClientConnect(connection_id) {
             dataPath: './sess',
             clientId: connection_id
         }),
-        // puppeteer: {
-        //     headless: true,
-        //     executablePath: '/usr/bin/google-chrome',
-        //     args: [
-        //         '--no-sandbox',
-        //         '--disable-setuid-sandbox',
-        //         '--disable-gpu',
-        //         '--disable-dev-shm-usage'
-        //     ],
-            // directorio único por sesión
-            // userDataDir: `/tmp/puppeteer_profile_${sessionName}`
-        //}
+        puppeteer: {
+            headless: true,
+            executablePath: '/usr/bin/google-chrome',
+            args: [
+                '--no-sandbox',
+                '--disable-setuid-sandbox',
+                '--disable-gpu',
+                '--disable-dev-shm-usage'
+            ],
+            userDataDir: `/tmp/puppeteer_profile_${sessionName}`
+        }
     });
 
     client.on('qr', async (qr) => {
