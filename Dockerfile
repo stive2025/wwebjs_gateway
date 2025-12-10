@@ -1,6 +1,6 @@
 FROM node:18-bullseye
 
-# Instalar dependencias del sistema para Puppeteer y FFmpeg
+# Instalar dependencias del sistema para Puppeteer
 RUN apt-get update && apt-get install -y \
     wget \
     gnupg \
@@ -26,30 +26,26 @@ RUN apt-get update && apt-get install -y \
     xdg-utils \
     && rm -rf /var/lib/apt/lists/*
 
-# Crear directorio de trabajo
 WORKDIR /app
 
-# Copiar package.json y package-lock.json
-COPY package*.json ./
+# Copiar el package.json desde la carpeta app
+COPY app/package*.json ./
 
-# Instalar dependencias de Node.js
+# Ejecutar npm install
 RUN npm install
 
-# Copiar el resto del código
-COPY . .
+# Copiar el resto del código de la carpeta app
+COPY app/ ./
 
-# Copiar archivo .env de producción (si existe)
-RUN if [ -f .env.production ]; then cp .env.production /app/app/.env.local; fi
+# Copiar archivo .env de producción si existe
+RUN if [ -f /app/.env.production ]; then cp /app/.env.production /app/.env.local; fi
 
 # Crear directorio para sesiones de WhatsApp
 RUN mkdir -p /app/.wwebjs_auth && chmod 777 /app/.wwebjs_auth
 
-# Exponer puerto (ajusta según tu aplicación)
 EXPOSE 3000
 
-# Variable de entorno para Puppeteer
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=false
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 
-# Comando para iniciar la aplicación
-CMD ["node", "app/src/index.js"]
+CMD ["node", "src/index.js"]
