@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   wwebjs:
     build: .
@@ -13,9 +15,3 @@ services:
       - WS_ROOT=ws://193.46.198.228:8082
       - API_ROOT=https://apiwa.sefil.com.ec/public/api
       - PUBLIC_PATH=https://apiwa.sefil.com.ec/public/
-    deploy:
-      resources:
-        limits:
-          memory: 2G
-        reservations:
-          memory: 1G
