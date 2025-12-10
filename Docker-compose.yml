@@ -1,0 +1,21 @@
+services:
+  wwebjs:
+    build: .
+    container_name: wwebjs-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./app/.wwebjs_auth:/app/.wwebjs_auth
+      - ./app/.wwebjs_cache:/app/.wwebjs_cache
+    environment:
+      - NODE_ENV=production
+      - WS_ROOT=ws://193.46.198.228:8082
+      - API_ROOT=https://apiwa.sefil.com.ec/public/api
+      - PUBLIC_PATH=https://apiwa.sefil.com.ec/public/
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+        reservations:
+          memory: 1G

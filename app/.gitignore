@@ -1,0 +1,9 @@
+.env.local
+.env.production
+.deb
+.sh
+/public
+/node_modules
+/sess
+/.wwebjs_cache
+index.js
