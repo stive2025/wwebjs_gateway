@@ -1,6 +1,6 @@
 FROM node:18-bullseye
 
-# Instalar dependencias del sistema para Puppeteer
+# Instalar Chrome y dependencias
 RUN apt-get update && apt-get install -y \
     wget \
     gnupg \
@@ -26,26 +26,32 @@ RUN apt-get update && apt-get install -y \
     xdg-utils \
     && rm -rf /var/lib/apt/lists/*
 
+# Descargar e instalar Google Chrome
+RUN wget -q -O - https://dl-ssl.google.com/linux/linux_signing_key.pub | gpg --dearmor -o /usr/share/keyrings/googlechrome-linux-keyring.gpg \
+    && sh -c 'echo "deb [arch=amd64 signed-by=/usr/share/keyrings/googlechrome-linux-keyring.gpg] http://dl.google.com/linux/chrome/deb/ stable main" >> /etc/apt/sources.list.d/google.list' \
+    && apt-get update \
+    && apt-get install -y google-chrome-stable \
+    && rm -rf /var/lib/apt/lists/*
+
 WORKDIR /app
 
-# Copiar el package.json desde la carpeta app
+# Copiar package.json desde la carpeta app
 COPY app/package*.json ./
 
-# Ejecutar npm install
+# Instalar dependencias
 RUN npm install
 
-# Copiar el resto del código de la carpeta app
+# Copiar el resto del código
 COPY app/ ./
 
-# Copiar archivo .env de producción si existe
-RUN if [ -f /app/.env.production ]; then cp /app/.env.production /app/.env.local; fi
-
-# Crear directorio para sesiones de WhatsApp
+# Crear directorios necesarios
 RUN mkdir -p /app/.wwebjs_auth && chmod 777 /app/.wwebjs_auth
+RUN mkdir -p /app/sess && chmod 777 /app/sess
 
 EXPOSE 3000
 
-ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=false
+# Variables de entorno para Puppeteer
+ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
 ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome-stable
 
 CMD ["node", "wweb_server.js"]

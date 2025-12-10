@@ -14,14 +14,18 @@ async function ClientConnect(connection_id) {
         }),
         puppeteer: {
             headless: true,
-            executablePath: '/usr/bin/google-chrome',
+            executablePath: '/usr/bin/google-chrome-stable',
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
                 '--disable-gpu',
-                '--disable-dev-shm-usage'
-            ],
-            // userDataDir: `/tmp/puppeteer_profile_${connection_id}`
+                '--disable-dev-shm-usage',
+                '--disable-accelerated-2d-canvas',
+                '--no-first-run',
+                '--no-zygote',
+                '--single-process',
+                '--disable-extensions'
+            ]
         }
     });
 
