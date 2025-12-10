@@ -33,13 +33,13 @@ WORKDIR /app
 COPY package*.json ./
 
 # Instalar dependencias de Node.js
-RUN npm ci --only=production
+RUN npm install
 
 # Copiar el resto del código
 COPY . .
 
-# Copiar archivo .env de producción
-COPY .env.production /app/app/.env.local
+# Copiar archivo .env de producción (si existe)
+RUN if [ -f .env.production ]; then cp .env.production /app/app/.env.local; fi
 
 # Crear directorio para sesiones de WhatsApp
 RUN mkdir -p /app/.wwebjs_auth && chmod 777 /app/.wwebjs_auth

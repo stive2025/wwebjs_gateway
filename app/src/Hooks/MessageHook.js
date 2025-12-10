@@ -13,7 +13,7 @@ const downloadMediaFromUrl = async (url) => {
 };
 
 async function messageHook({e}) {
-    const { getClients } = require('../Hooks/ClientsHook');
+    const { getClients } = require('./ClientsHook');
     const { MessageMedia } = require('whatsapp-web.js');
     const axios= require('axios');
 
