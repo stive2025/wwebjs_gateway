@@ -2,7 +2,7 @@ const { conn } = require('../Services/BroadcastService');
 const ch_type='CONNECTION';
 
 async function getConnections() {
-    return [1,2];
+    return [2,4,5,6,7,8,56,57,60];
 }
 
 //  Conectado a Whatsapp

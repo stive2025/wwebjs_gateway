@@ -21,7 +21,7 @@ async function ClientConnect(connection_id) {
                 '--disable-gpu',
                 '--disable-dev-shm-usage'
             ],
-            userDataDir: `/tmp/puppeteer_profile_${sessionName}`
+            userDataDir: `/tmp/puppeteer_profile_${connection_id}`
         }
     });
 
