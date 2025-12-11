@@ -69,8 +69,9 @@ async function ClientConnect(connection_id) {
         const data=msg._data;
         console.log("WEFIL: Nuevo mensaje recibido.");
         const client_id=client.options.authStrategy.clientId;
+        console.log("WEFIL: Client ID:",client_id);
 
-        if(data.id.remote!=='status@broadcast' & client_id===connection_id){
+        if(data.id.remote!=='status@broadcast'){
             const message={
                 'body':(data.type!=='chat') ? (data.caption!==null) ? data.caption : 'Multimedia' : data.body,
                 'ack':data.ack,
@@ -87,7 +88,7 @@ async function ClientConnect(connection_id) {
 
             let resp=[];
 
-             if(
+            if(
                 data.type!=='video' &
                 (   data.type=='audio'      || 
                     data.type=='image'      ||
