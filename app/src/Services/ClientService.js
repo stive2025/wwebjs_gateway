@@ -19,8 +19,8 @@ async function cleanSession(connection_id) {
 }
 
 async function ClientConnect(connection_id) {
-    // Limpiar sesión previa si existe
-    await cleanSession(connection_id);
+    //  Limpiar sesión previa si existe
+    //  await cleanSession(connection_id);
     
     let client = new Client({    
         authStrategy: new NoAuth(),
@@ -35,7 +35,7 @@ async function ClientConnect(connection_id) {
                 '--disable-software-rasterizer',
                 '--disable-dev-profile'
             ],
-            userDataDir: `./sess/session-${connection_id}`
+            //userDataDir: `./sess/session-${connection_id}`
         }
     });
 
