@@ -13,7 +13,7 @@ services:
       - NODE_ENV=production
       - WS_ROOT=ws://193.46.198.228:8082
       - API_ROOT=http://193.46.198.228:8001/api
-      - PUBLIC_PATH=http://193.46.198.228:8001/public/
+      - PUBLIC_PATH=http://193.46.198.228:8001/
     shm_size: '2gb'
     deploy:
       resources:
