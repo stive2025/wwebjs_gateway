@@ -12,6 +12,28 @@ const downloadMediaFromUrl = async (url) => {
     return media;
 };
 
+async function getUserIDByConnectionID(user_id) {
+    if(user_id===45){
+        return 7;
+    }else if(user_id===46){
+        return 2;
+    }else if(user_id===47){
+        return 60;
+    }else if(user_id===48){
+        return 4;
+    }else if(user_id===49){
+        return 5;
+    }else if(user_id===54){
+        return 8;
+    }else if(user_id===57){
+        return 56;
+    }else if(user_id===58){
+        return 57;
+    }else if(user_id===59){
+        return 6;
+    }
+}
+
 async function messageHook({e}) {
     const { getClients } = require('./ClientsHook');
     const { MessageMedia } = require('whatsapp-web.js');
@@ -25,7 +47,7 @@ async function messageHook({e}) {
         const rq = JSON.parse(e.data);
         const media = rq.media;
 
-        console.log(rq);
+        rq.user_id = await getUserIDByConnectionID(rq.user_id);
 
         if (media.length > 0) {
             media.map(async file => {
