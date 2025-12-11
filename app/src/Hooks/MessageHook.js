@@ -34,6 +34,33 @@ async function getUserIDByConnectionID(user_id) {
     }
 }
 
+async function sendMessageToWA({client,rq,type,media,file,lid}){
+    if(type==='chat'){
+        const send = await client.sendMessage(`${rq.number}${lid}`, rq.body);
+        return send;
+    }else if(type==='image'){
+        const send = await client.sendMessage(`${rq.number}${lid}`, media, { caption: file.caption });
+        return send;
+    }else if(type==='audio1'){
+        const send = await client.sendMessage(`${rq.number}${lid}`, media, { sendAudioAsVoice: true, caption: file.caption });
+        return send;
+    }else if(type==='audio2'){
+        const send = await client.sendMessage(`${rq.number}${lid}`, media, { caption: file.caption });
+        return send;
+    }else{
+        const send = await client.sendMessage(`${rq.number}${lid}`, media, { caption: file.caption });
+        return send;
+    }
+}
+
+async function helperLidOrUsID({client,rq,type,media,file}){
+    try{
+        return await sendMessageToWA({client,rq,type,media,file,lid:'@c.us'});
+    }catch(error){
+        return await sendMessageToWA({client,rq,type,media,file,lid:'@lid'});
+    }
+}
+
 async function messageHook({e}) {
     const { getClients } = require('./ClientsHook');
     const { MessageMedia } = require('whatsapp-web.js');
@@ -52,7 +79,6 @@ async function messageHook({e}) {
         if (media.length > 0) {
             media.map(async file => {
                 const filePath = `${process.env.PUBLIC_PATH}${file.filename}`;
-                console.log(filePath);
                 let data = [];
 
                 if (file.type !== 'video') {
@@ -66,13 +92,15 @@ async function messageHook({e}) {
                             const buffer = Buffer.from(arrayBuffer);
                             const base64Audio = buffer.toString('base64');
                             media = new MessageMedia('audio/ogg', base64Audio, 'voice.ogg');
-                            const create_message = await clients[rq.user_id].sendMessage(`${rq.number}@c.us`, media, { sendAudioAsVoice: true, caption: file.caption });
+                            const create_message = await helperLidOrUsID({client: clients[rq.user_id], rq, type: 'audio1', media, file});
                             data = create_message._data;
 
                         } else {
+
                             media = await downloadMediaFromUrl(filePath);
-                            const create_message = await clients[rq.user_id].sendMessage(`${rq.number}@c.us`, media, { caption: file.caption });
+                            const create_message = await helperLidOrUsID({client: clients[rq.user_id], rq, type: 'audio2', media, file});
                             data = create_message._data;
+
                         }
                     } else if (file.type === 'image') {
                         const response = await axios.get(filePath, {
@@ -85,12 +113,12 @@ async function messageHook({e}) {
                             'imagen.jpg'
                         );
 
-                        const create_message = await clients[rq.user_id].sendMessage(`${rq.number}@c.us`, media, { caption: file.caption });
+                        const create_message = await helperLidOrUsID({client: clients[rq.user_id], rq, type: 'image', media, file});
                         data = create_message._data;
                     } else {
 
                         media = await downloadMediaFromUrl(filePath);
-                        const create_message = await clients[rq.user_id].sendMessage(`${rq.number}@c.us`, media, { caption: file.caption });
+                        const create_message = await helperLidOrUsID({client: clients[rq.user_id], rq, type: file.type, media, file});
                         data = create_message._data;
 
                     }
@@ -127,7 +155,7 @@ async function messageHook({e}) {
             });
         } else {
 
-            const send = await clients[rq.user_id].sendMessage(`${rq.number}@c.us`, rq.body);
+            const send = await helperLidOrUsID({client: clients[rq.user_id], rq, type: 'chat', media: null, file: {}});
             const data = send._data;
             const message = {
                 'body': data.body,
@@ -140,7 +168,7 @@ async function messageHook({e}) {
                 'media_url': "",
                 'timestamp': data.t,
                 'is_private': 0,
-                //'temp_signature': rq.temp_signature
+                'temp_signature': rq.temp_signature
             };
 
             if (rq.chat_id !== null) {
@@ -156,8 +184,6 @@ async function messageHook({e}) {
             });
 
             const response = await request.json();
-
-            console.log(response)
 
             if (response.status === 200) {
                 console.log("WEFIL: Mensaje enviado");
