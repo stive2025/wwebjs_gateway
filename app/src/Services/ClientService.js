@@ -1,31 +1,41 @@
-const { Client, LocalAuth } = require("whatsapp-web.js");
+const { Client, NoAuth } = require("whatsapp-web.js");
 const qrcode = require('qrcode-terminal');
 const fs = require('fs').promises;
+const path = require('path');
 const { updateConnection,updateState,updateQR } = require('../Helpers/ConnectionHelper');
 const { store,updateACK } = require('../Helpers/MessageHelper');
 
 let clients={};
 
+// Función para limpiar sesión corrupta
+async function cleanSession(connection_id) {
+    const sessionPath = path.join(__dirname, `../../sess/session-${connection_id}`);
+    try {
+        await fs.rm(sessionPath, { recursive: true, force: true });
+        console.log(`✅ Sesión limpiada: ${sessionPath}`);
+    } catch (error) {
+        console.log(`⚠️ No se pudo limpiar sesión: ${error.message}`);
+    }
+}
+
 async function ClientConnect(connection_id) {
+    // Limpiar sesión previa si existe
+    await cleanSession(connection_id);
+    
     let client = new Client({    
-        authStrategy: new LocalAuth({
-            dataPath: './sess',
-            clientId: connection_id
-        }),
+        authStrategy: new NoAuth(),
         puppeteer: {
             headless: true,
-            executablePath: '/usr/bin/google-chrome-stable',
+            executablePath: '/usr/bin/google-chrome',
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',
                 '--disable-gpu',
                 '--disable-dev-shm-usage',
-                '--disable-accelerated-2d-canvas',
-                '--no-first-run',
-                '--no-zygote',
-                '--single-process',
-                '--disable-extensions'
-            ]
+                '--disable-software-rasterizer',
+                '--disable-dev-profile'
+            ],
+            userDataDir: `./sess/session-${connection_id}`
         }
     });
 
@@ -102,6 +112,8 @@ async function ClientConnect(connection_id) {
                     }
                 }
 
+                console.log(data.id);
+
                 if(data.id.fromMe===false){
                     await store({message:message,msg:msg});
                 }
@@ -152,22 +164,21 @@ async function ClientConnect(connection_id) {
     });
 
     client.on('disconnected',async (reason) => {
+        console.log(`WEFIL: Desconectado ${connection_id} - Razón: ${reason}`);
         await updateState({connection_id,status:'DISCONNECTED'});
 
         try {
             if (clients[connection_id]) {
-                clients[connection_id].destroy();
+                await clients[connection_id].destroy();
+                delete clients[connection_id];
             }
-
-            const sessionPath = `.wwebjs_cache`;
-            await fs.rm(sessionPath, { recursive: true, force: true });
-            console.log("✅ Directorio de sesión eliminado correctamente:", sessionPath);
+            await cleanSession(connection_id);
         } catch (e) {
-            console.error("❌ Error al eliminar carpeta de sesión:", e);
+            console.error("❌ Error al limpiar sesión:", e);
         }
     });
 
-    client.initialize();
+    await client.initialize();
     clients[connection_id] = client;
 }
 

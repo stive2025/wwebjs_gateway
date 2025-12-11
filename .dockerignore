@@ -6,3 +6,9 @@ npm-debug.log
 README.md
 .wwebjs_auth
 .wwebjs_cache
+sess
+*.log
+package-lock.json
+.dockerignore
+Dockerfile
+docker-compose.yml

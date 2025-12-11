@@ -27,16 +27,20 @@ async function updateACK({ message, message_ws }) {
 //  Para guardar un mensaje nuevo
 async function store({ message, msg }) {
     try {
+        console.log("WEFIL: Enviando mensaje a backend...");
+        console.log(process.env.API_ROOT);
         const request = await fetch(`${process.env.API_ROOT}/messages`, {
             method: 'POST',
             headers: {
                 Accept: 'application/json',
+                'Content-Type': 'application/x-www-form-urlencoded'
             },
             body: new URLSearchParams(message)
         });
         const response = await request.json();
         resp = response;
         message.filename = response.media_path;
+        console.log(response);
 
         if (msg.fromMe) {
             console.log(`WEFIL: Mensaje interno creado correctamente.`);
