@@ -57,6 +57,7 @@ async function updateState({connection_id,status}){
 
 //  Para actualizar el QR de la conexión
 async function updateQR({connection_id,qr}){
+    console.log(`${process.env.API_ROOT}/connections/${connection_id}`)
     const request=await fetch(`${process.env.API_ROOT}/connections/${connection_id}`,{
         method:'PUT',
         headers: {
