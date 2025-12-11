@@ -167,16 +167,6 @@ async function ClientConnect(connection_id) {
     client.on('disconnected',async (reason) => {
         console.log(`WEFIL: Desconectado ${connection_id} - Razón: ${reason}`);
         await updateState({connection_id,status:'DISCONNECTED'});
-
-        try {
-            if (clients[connection_id]) {
-                await clients[connection_id].destroy();
-                delete clients[connection_id];
-            }
-            await cleanSession(connection_id);
-        } catch (e) {
-            console.error("❌ Error al limpiar sesión:", e);
-        }
     });
 
     await client.initialize();
