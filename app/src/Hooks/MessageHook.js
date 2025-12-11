@@ -25,6 +25,8 @@ async function messageHook({e}) {
         const rq = JSON.parse(e.data);
         const media = rq.media;
 
+        console.log(rq);
+
         if (media.length > 0) {
             media.map(async file => {
                 const filePath = `${process.env.PUBLIC_PATH}${file.filename}`;
