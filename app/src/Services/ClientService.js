@@ -29,7 +29,7 @@ async function ClientConnect(connection_id) {
         }),
         puppeteer: {
             headless: true,
-            executablePath: '/usr/bin/google-chrome',
+            executablePath: '/usr/bin/chromium',
             args: [
                 '--no-sandbox',
                 '--disable-setuid-sandbox',

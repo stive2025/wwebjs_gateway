@@ -1,9 +1,8 @@
-FROM ubuntu:22.04
+FROM debian:bullseye
 
-# Evitar prompts interactivos
 ENV DEBIAN_FRONTEND=noninteractive
 
-# Instalar dependencias según documentación oficial de wwebjs
+# Instalar dependencias base
 RUN apt-get update && apt-get install -y \
     curl \
     wget \
@@ -40,12 +39,12 @@ RUN apt-get update && apt-get install -y \
     libxrender1 \
     libxss1 \
     libxtst6 \
-    ca-certificates \
     fonts-liberation \
-    libappindicator1 \
+    libappindicator3-1 \
     libnss3 \
     lsb-release \
     xdg-utils \
+    chromium \
     && rm -rf /var/lib/apt/lists/*
 
 # Instalar Node.js 18
@@ -53,15 +52,8 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - \
     && apt-get install -y nodejs \
     && rm -rf /var/lib/apt/lists/*
 
-# Descargar e instalar Google Chrome Stable
-RUN wget -q https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb \
-    && apt-get update \
-    && apt-get install -y ./google-chrome-stable_current_amd64.deb \
-    && rm google-chrome-stable_current_amd64.deb \
-    && rm -rf /var/lib/apt/lists/*
-
 # Verificar instalación
-RUN node --version && npm --version && google-chrome --version
+RUN node --version && npm --version && chromium --version
 
 WORKDIR /app
 
@@ -85,7 +77,7 @@ RUN mkdir -p /app/.wwebjs_auth /app/.wwebjs_cache /app/sess && \
 EXPOSE 3001
 
 ENV PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true
-ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/google-chrome
+ENV PUPPETEER_EXECUTABLE_PATH=/usr/bin/chromium
 ENV NODE_OPTIONS="--max-old-space-size=2048"
 
 CMD ["node", "wweb_server.js"]
