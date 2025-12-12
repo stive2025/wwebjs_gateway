@@ -67,7 +67,6 @@ async function messageHook({e}) {
     const axios= require('axios');
 
     const clients = getClients();
-
     console.log("WEFIL: Nuevo mensaje desde CRM para enviar.");
 
     try {
@@ -75,6 +74,7 @@ async function messageHook({e}) {
         const media = rq.media;
 
         rq.user_id = await getUserIDByConnectionID(rq.user_id);
+        console.log(clients[rq.user_id] ? `WEFIL: Enviando mensaje para el usuario ID ${rq.user_id}` : `WEFIL: No se encontró cliente para el usuario ID ${rq.user_id}`);
 
         if (media.length > 0) {
             media.map(async file => {
